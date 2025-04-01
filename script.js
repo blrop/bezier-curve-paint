@@ -89,11 +89,11 @@ let dragStartDelta = null;
 
 drawBezierCurve(...points);
 
-$canvas.addEventListener('mousedown', (e) => {
+const startMove = (x, y) => {
     draggingPointIndex = points.findIndex((point) => {
         return (
-            Math.abs(point.x - e.offsetX) <= POINT_SIZE &&
-            Math.abs(point.y - e.offsetY) <= POINT_SIZE
+            Math.abs(point.x - x) <= POINT_SIZE * 2 &&
+            Math.abs(point.y - y) <= POINT_SIZE * 2
         );
     });
     if (draggingPointIndex === -1) {
@@ -101,25 +101,49 @@ $canvas.addEventListener('mousedown', (e) => {
     }
 
     dragStartDelta = {
-        x: e.offsetX - points[draggingPointIndex].x,
-        y: e.offsetY - points[draggingPointIndex].y,
+        x: x - points[draggingPointIndex].x,
+        y: y - points[draggingPointIndex].y,
     };
-});
+};
 
-$canvas.addEventListener('mousemove', (e) => {
+const move = (x, y) => {
     if (draggingPointIndex === -1) {
         return;
     }
 
     points[draggingPointIndex] = {
-        x: e.offsetX + dragStartDelta.x,
-        y: e.offsetY + dragStartDelta.y,
+        x: x - dragStartDelta.x,
+        y: y - dragStartDelta.y,
     };
 
     clear();
     drawBezierCurve(...points);
+};
+
+const stopMove = () => {
+    draggingPointIndex = -1;
+};
+
+$canvas.addEventListener('mousedown', (e) => {
+    startMove(e.offsetX, e.offsetY);
+});
+
+$canvas.addEventListener('touchstart', (e) => {
+    startMove(e.touches[0].clientX, e.touches[0].clientY);
+});
+
+$canvas.addEventListener('mousemove', (e) => {
+    move(e.offsetX, e.offsetY);
+});
+
+$canvas.addEventListener('touchmove', (e) => {
+    move(e.touches[0].clientX, e.touches[0].clientY);
 });
 
 $canvas.addEventListener('mouseup', () => {
-    draggingPointIndex = -1;
+    stopMove();
+});
+
+$canvas.addEventListener('touchend', () => {
+    stopMove();
 });
