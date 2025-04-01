@@ -7,7 +7,18 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<canvas id="canvas" width="1200" height="650"></canvas>
+	<div id="message">
+		<p>
+			This demo paints Bézier curve's without help of the HTML5 Canvas API. Manual calculation is performed instead and only straight lines are used.
+		</p>
+		<p>
+			Click in 3 places to select Bézier curve's control points. Click again to clear the canvas.
+		</p>			
+	</div>
+
+	<div id="canvas-wrapper">
+		<canvas id="canvas"></canvas>
+	</div>
 
 	<script src="script.js"></script>
 </body>

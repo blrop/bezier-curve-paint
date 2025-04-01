@@ -1,7 +1,13 @@
 const colorGreen = 'rgb(34, 133, 49)';
 const colorRed = 'rgb(133, 51, 34)';
 
+const $canvasWrapper = document.getElementById('canvas-wrapper');
 const $canvas = document.getElementById('canvas');
+const canvasWidth = $canvasWrapper.clientWidth;
+const canvasHeight = $canvasWrapper.clientHeight;
+$canvas.width = canvasWidth;
+$canvas.height = canvasHeight;
+
 const ctx = $canvas.getContext('2d');
 
 const getPointByPercent = (point1, point2, percent) => {
