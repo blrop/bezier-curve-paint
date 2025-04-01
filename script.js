@@ -1,5 +1,7 @@
-const colorGreen = 'rgb(34, 133, 49)';
-const colorRed = 'rgb(133, 51, 34)';
+const COLOR_GREEN = 'rgb(34, 133, 49)';
+const COLOR_RED = 'rgb(133, 51, 34)';
+const COLOR_YELLOW = 'rgb(222,189,56)';
+const POINT_SIZE = 10;
 
 const $canvasWrapper = document.getElementById('canvas-wrapper');
 const $canvas = document.getElementById('canvas');
@@ -16,6 +18,13 @@ const getPointByPercent = (point1, point2, percent) => {
 
     return { x, y };
 }
+
+const getRandomPoint = (width, height) => {
+    return {
+        x: Math.floor(Math.random() * width),
+        y: Math.floor(Math.random() * height),
+    };
+};
 
 const setColor = (color) => {
     ctx.strokeStyle = color;
@@ -43,13 +52,20 @@ drawCircle = (point, radius) => {
 };
 
 const drawBezierCurve = (point1, point2, point3) => {
-    setColor(colorGreen);
     setLineWidth(1);
+    setColor(COLOR_GREEN);
+
     drawLine(point1, point2);
     drawLine(point2, point3);
 
-    setColor(colorRed);
+    setColor(COLOR_YELLOW);
+
+    drawCircle(point1, POINT_SIZE);
+    drawCircle(point2, POINT_SIZE);
+    drawCircle(point3, POINT_SIZE);
+
     setLineWidth(3);
+    setColor(COLOR_RED);
 
     let oldPoint = point1;
     for (let i = 0; i <= 100; i++) {
@@ -58,27 +74,52 @@ const drawBezierCurve = (point1, point2, point3) => {
         const currentPoint = getPointByPercent(point12, point23, i);
 
         drawLine(oldPoint, currentPoint);
+
         oldPoint = currentPoint;
     }
 };
 
-let selectedPoints = [];
+const points = [
+    getRandomPoint(canvasWidth, canvasHeight),
+    getRandomPoint(canvasWidth, canvasHeight),
+    getRandomPoint(canvasWidth, canvasHeight),
+];
+let draggingPointIndex = -1;
+let dragStartDelta = null;
 
-$canvas.addEventListener('click', (e) => {
-    if (selectedPoints.length < 3) {
-        const point = { x: e.offsetX, y: e.offsetY };
-        selectedPoints.push(point);
+drawBezierCurve(...points);
 
-        setColor(colorRed);
-        setLineWidth(3);
-        drawCircle(point, 10);
-
-        if (selectedPoints.length === 3) {
-            clear();
-            drawBezierCurve(...selectedPoints);
-        }
-    } else if (selectedPoints.length === 3) {
-        clear();
-        selectedPoints = [];
+$canvas.addEventListener('mousedown', (e) => {
+    draggingPointIndex = points.findIndex((point) => {
+        return (
+            Math.abs(point.x - e.offsetX) <= POINT_SIZE &&
+            Math.abs(point.y - e.offsetY) <= POINT_SIZE
+        );
+    });
+    if (draggingPointIndex === -1) {
+        return;
     }
+
+    dragStartDelta = {
+        x: e.offsetX - points[draggingPointIndex].x,
+        y: e.offsetY - points[draggingPointIndex].y,
+    };
+});
+
+$canvas.addEventListener('mousemove', (e) => {
+    if (draggingPointIndex === -1) {
+        return;
+    }
+
+    points[draggingPointIndex] = {
+        x: e.offsetX + dragStartDelta.x,
+        y: e.offsetY + dragStartDelta.y,
+    };
+
+    clear();
+    drawBezierCurve(...points);
+});
+
+$canvas.addEventListener('mouseup', () => {
+    draggingPointIndex = -1;
 });
