@@ -19,13 +19,6 @@ const getPointByPercent = (point1, point2, percent) => {
     return { x, y };
 }
 
-const getRandomPoint = (width, height) => {
-    return {
-        x: Math.floor(Math.random() * width),
-        y: Math.floor(Math.random() * height),
-    };
-};
-
 const setColor = (color) => {
     ctx.strokeStyle = color;
 };
@@ -79,10 +72,21 @@ const drawBezierCurve = (point1, point2, point3) => {
     }
 };
 
+const canvasWidthHalf = canvasWidth / 2;
+const canvasHeightHalf = canvasHeight / 2;
 const points = [
-    getRandomPoint(canvasWidth, canvasHeight),
-    getRandomPoint(canvasWidth, canvasHeight),
-    getRandomPoint(canvasWidth, canvasHeight),
+    { // screen left bottom quarter
+        x: Math.floor(Math.random() * canvasWidthHalf),
+        y: Math.floor(Math.random() * canvasHeightHalf) + canvasHeightHalf,
+    },
+    { // screen top half (but a bit lower)
+        x: Math.floor(Math.random() * canvasWidth),
+        y: Math.floor(Math.random() * canvasHeightHalf) + canvasHeight / 10,
+    },
+    { // screen right bottom quarter
+        x: Math.floor(Math.random() * canvasWidthHalf) + canvasWidthHalf,
+        y: Math.floor(Math.random() * canvasHeightHalf) + canvasHeightHalf,
+    },
 ];
 let draggingPointIndex = -1;
 let dragStartDelta = null;
